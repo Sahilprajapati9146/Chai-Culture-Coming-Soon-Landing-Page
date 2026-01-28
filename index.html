@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chai Culture - Brew the Royal Tradition</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Raleway:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    .font-display {
+      font-family: 'Cormorant Garamond', serif;
+    }
+    
+    .font-body {
+      font-family: 'Raleway', sans-serif;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    
+    @keyframes steam {
+      0% { opacity: 0; transform: translateY(0) scale(1); }
+      50% { opacity: 0.6; }
+      100% { opacity: 0; transform: translateY(-40px) scale(1.5); }
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.6); }
+    }
+    
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .animate-shimmer {
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+      background-size: 200% 100%;
+      animation: shimmer 3s infinite;
+    }
+    
+    .animate-steam {
+      animation: steam 3s ease-out infinite;
+    }
+    
+    .animate-fade-in-up {
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+    
+    .animate-pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+    .delay-500 { animation-delay: 0.5s; }
+    .delay-600 { animation-delay: 0.6s; }
+    
+    .royal-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5L35 15L45 15L37 22L40 32L30 26L20 32L23 22L15 15L25 15Z' fill='%23D4AF37' fill-opacity='0.05'/%3E%3C/svg%3E");
+    }
+    
+    .mandala-bg {
+      background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='100' cy='100' r='80' fill='none' stroke='%23D4AF37' stroke-opacity='0.1' stroke-width='0.5'/%3E%3Ccircle cx='100' cy='100' r='60' fill='none' stroke='%23D4AF37' stroke-opacity='0.1' stroke-width='0.5'/%3E%3Ccircle cx='100' cy='100' r='40' fill='none' stroke='%23D4AF37' stroke-opacity='0.1' stroke-width='0.5'/%3E%3Cpath d='M100 20 L100 180 M20 100 L180 100 M35 35 L165 165 M165 35 L35 165' stroke='%23D4AF37' stroke-opacity='0.05' stroke-width='0.5'/%3E%3C/svg%3E");
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full font-body">
+  <div id="app" class="h-full w-full overflow-auto"></div>
+  <script>
+    const defaultConfig = {
+      tagline: "Brew the Royal Tradition",
+      description: "Experience the authentic taste of royal Indian chai, crafted with premium spices and centuries-old recipes from the palaces of Rajasthan. Each cup tells a story of heritage, warmth, and timeless elegance.",
+      launch_text: "Launching Soon",
+      background_color: "#1a1209",
+      surface_color: "#2d2013",
+      text_color: "#f5f0e8",
+      primary_action_color: "#D4AF37",
+      secondary_action_color: "#8B7355",
+      font_family: "Cormorant Garamond",
+      font_size: 16
+    };
+
+    let config = { ...defaultConfig };
+    let emailList = [];
+    let isSubmitting = false;
+
+    // Data SDK Handler
+    const dataHandler = {
+      onDataChanged(data) {
+        emailList = data;
+        updateSubscriberCount();
+      }
+    };
+
+    function updateSubscriberCount() {
+      const countEl = document.getElementById('subscriber-count');
+      if (countEl && emailList.length > 0) {
+        countEl.textContent = `Join ${emailList.length}+ chai enthusiasts`;
+        countEl.style.display = 'block';
+      }
+    }
+
+    // Element SDK Implementation
+    async function onConfigChange(cfg) {
+      config = { ...defaultConfig, ...cfg };
+      
+      const taglineEl = document.getElementById('tagline');
+      const descriptionEl = document.getElementById('description');
+      const launchTextEl = document.getElementById('launch-text');
+      const bodyEl = document.body;
+      const mainContainer = document.getElementById('main-container');
+      const cards = document.querySelectorAll('.surface-card');
+      const headings = document.querySelectorAll('.heading-text');
+      const bodyTexts = document.querySelectorAll('.body-text');
+      const primaryBtns = document.querySelectorAll('.primary-btn');
+      const secondaryEls = document.querySelectorAll('.secondary-el');
+      const goldAccents = document.querySelectorAll('.gold-accent');
+      
+      if (taglineEl) taglineEl.textContent = config.tagline;
+      if (descriptionEl) descriptionEl.textContent = config.description;
+      if (launchTextEl) launchTextEl.textContent = config.launch_text;
+      
+      // Apply colors
+      if (mainContainer) mainContainer.style.backgroundColor = config.background_color;
+      
+      cards.forEach(card => {
+        card.style.backgroundColor = config.surface_color;
+      });
+      
+      headings.forEach(h => {
+        h.style.color = config.text_color;
+      });
+      
+      bodyTexts.forEach(t => {
+        t.style.color = config.text_color;
+      });
+      
+      primaryBtns.forEach(btn => {
+        btn.style.backgroundColor = config.primary_action_color;
+      });
+      
+      secondaryEls.forEach(el => {
+        el.style.color = config.secondary_action_color;
+      });
+      
+      goldAccents.forEach(el => {
+        el.style.color = config.primary_action_color;
+        el.style.borderColor = config.primary_action_color;
+      });
+      
+      // Apply fonts
+      const customFont = config.font_family;
+      const baseFontStack = 'Georgia, serif';
+      
+      document.querySelectorAll('.font-display').forEach(el => {
+        el.style.fontFamily = `${customFont}, ${baseFontStack}`;
+      });
+      
+      // Apply font sizing
+      const baseSize = config.font_size;
+      document.querySelectorAll('.text-scale-xl').forEach(el => {
+        el.style.fontSize = `${baseSize * 3}px`;
+      });
+      document.querySelectorAll('.text-scale-lg').forEach(el => {
+        el.style.fontSize = `${baseSize * 1.5}px`;
+      });
+      document.querySelectorAll('.text-scale-base').forEach(el => {
+        el.style.fontSize = `${baseSize}px`;
+      });
+      document.querySelectorAll('.text-scale-sm').forEach(el => {
+        el.style.fontSize = `${baseSize * 0.875}px`;
+      });
+    }
+
+    function mapToCapabilities(cfg) {
+      return {
+        recolorables: [
+          {
+            get: () => cfg.background_color || defaultConfig.background_color,
+            set: (value) => { cfg.background_color = value; window.elementSdk.setConfig({ background_color: value }); }
+          },
+          {
+            get: () => cfg.surface_color || defaultConfig.surface_color,
+            set: (value) => { cfg.surface_color = value; window.elementSdk.setConfig({ surface_color: value }); }
+          },
+          {
+            get: () => cfg.text_color || defaultConfig.text_color,
+            set: (value) => { cfg.text_color = value; window.elementSdk.setConfig({ text_color: value }); }
+          },
+          {
+            get: () => cfg.primary_action_color || defaultConfig.primary_action_color,
+            set: (value) => { cfg.primary_action_color = value; window.elementSdk.setConfig({ primary_action_color: value }); }
+          },
+          {
+            get: () => cfg.secondary_action_color || defaultConfig.secondary_action_color,
+            set: (value) => { cfg.secondary_action_color = value; window.elementSdk.setConfig({ secondary_action_color: value }); }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => cfg.font_family || defaultConfig.font_family,
+          set: (value) => { cfg.font_family = value; window.elementSdk.setConfig({ font_family: value }); }
+        },
+        fontSizeable: {
+          get: () => cfg.font_size || defaultConfig.font_size,
+          set: (value) => { cfg.font_size = value; window.elementSdk.setConfig({ font_size: value }); }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(cfg) {
+      return new Map([
+        ["tagline", cfg.tagline || defaultConfig.tagline],
+        ["description", cfg.description || defaultConfig.description],
+        ["launch_text", cfg.launch_text || defaultConfig.launch_text]
+      ]);
+    }
+
+    async function handleEmailSubmit(e) {
+      e.preventDefault();
+      
+      if (isSubmitting) return;
+      
+      const emailInput = document.getElementById('email-input');
+      const submitBtn = document.getElementById('submit-btn');
+      const successMsg = document.getElementById('success-message');
+      const errorMsg = document.getElementById('error-message');
+      const email = emailInput.value.trim();
+      
+      if (!email || !email.includes('@')) {
+        errorMsg.textContent = 'Please enter a valid email address';
+        errorMsg.style.display = 'block';
+        successMsg.style.display = 'none';
+        return;
+      }
+      
+      // Check for duplicates
+      if (emailList.some(item => item.email === email)) {
+        errorMsg.textContent = 'This email is already subscribed';
+        errorMsg.style.display = 'block';
+        successMsg.style.display = 'none';
+        return;
+      }
+      
+      // Check data limit
+      if (emailList.length >= 999) {
+        errorMsg.textContent = 'Subscription list is currently full';
+        errorMsg.style.display = 'block';
+        successMsg.style.display = 'none';
+        return;
+      }
+      
+      isSubmitting = true;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="animate-pulse">Subscribing...</span>';
+      
+      const result = await window.dataSdk.create({
+        email: email,
+        subscribed_at: new Date().toISOString()
+      });
+      
+      if (result.isOk) {
+        successMsg.style.display = 'block';
+        errorMsg.style.display = 'none';
+        emailInput.value = '';
+      } else {
+        errorMsg.textContent = 'Something went wrong. Please try again.';
+        errorMsg.style.display = 'block';
+        successMsg.style.display = 'none';
+      }
+      
+      isSubmitting = false;
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Join the Journey';
+    }
+
+    function renderApp() {
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <div id="main-container" class="min-h-full w-full royal-pattern" style="background-color: ${config.background_color};">
+          <!-- Decorative Mandala Background -->
+          <div class="fixed inset-0 mandala-bg opacity-30 pointer-events-none"></div>
+          
+          <!-- Main Content -->
+          <div class="relative z-10 min-h-full flex flex-col">
+            
+            <!-- Header -->
+            <header class="w-full py-6 px-4 sm:px-8">
+              <div class="max-w-6xl mx-auto flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 animate-fade-in-up">
+                  <div class="relative">
+                    <svg viewBox="0 0 60 60" class="w-12 h-12 sm:w-16 sm:h-16 gold-accent" style="color: ${config.primary_action_color};">
+                      <circle cx="30" cy="30" r="28" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                      <path d="M20 35 Q20 25 30 20 Q40 25 40 35 L40 40 Q40 45 30 45 Q20 45 20 40 Z" fill="currentColor" opacity="0.2"/>
+                      <path d="M20 35 Q20 25 30 20 Q40 25 40 35 L40 40 Q40 45 30 45 Q20 45 20 40 Z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                      <path d="M40 32 Q50 30 48 25" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                      <!-- Steam lines -->
+                      <path d="M25 18 Q23 12 26 8" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6" class="animate-steam"/>
+                      <path d="M30 16 Q28 10 31 5" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6" class="animate-steam delay-200"/>
+                      <path d="M35 18 Q33 12 36 8" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6" class="animate-steam delay-400"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h1 class="font-display text-2xl sm:text-3xl font-semibold tracking-wide heading-text" style="color: ${config.text_color};">
+                      Chai Culture
+                    </h1>
+                    <p class="text-xs tracking-widest uppercase gold-accent" style="color: ${config.primary_action_color};">Est. 2024</p>
+                  </div>
+                </div>
+                
+                <!-- Social Icons -->
+                <div class="flex gap-4 animate-fade-in-up delay-200">
+                  <a href="#" class="secondary-el hover:text-amber-400 transition-colors duration-300" style="color: ${config.secondary_action_color};" aria-label="Instagram">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                  </a>
+                  <a href="#" class="secondary-el hover:text-amber-400 transition-colors duration-300" style="color: ${config.secondary_action_color};" aria-label="Facebook">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                  </a>
+                  <a href="#" class="secondary-el hover:text-amber-400 transition-colors duration-300" style="color: ${config.secondary_action_color};" aria-label="Twitter">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </header>
+            
+            <!-- Hero Section -->
+            <main class="flex-1 flex items-center justify-center px-4 sm:px-8 py-8 sm:py-12">
+              <div class="max-w-4xl mx-auto text-center">
+                
+                <!-- Decorative Element -->
+                <div class="mb-6 animate-fade-in-up">
+                  <svg viewBox="0 0 200 20" class="w-48 sm:w-64 mx-auto gold-accent" style="color: ${config.primary_action_color};">
+                    <path d="M0 10 L60 10 M140 10 L200 10" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+                    <path d="M80 10 L85 5 L90 10 L95 5 L100 10 L105 5 L110 10 L115 5 L120 10" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                    <circle cx="70" cy="10" r="3" fill="currentColor" opacity="0.5"/>
+                    <circle cx="130" cy="10" r="3" fill="currentColor" opacity="0.5"/>
+                  </svg>
+                </div>
+                
+                <!-- Launching Soon Badge -->
+                <div class="inline-block mb-6 animate-fade-in-up delay-100">
+                  <span id="launch-text" class="surface-card px-6 py-2 rounded-full text-sm tracking-widest uppercase gold-accent border animate-pulse-glow text-scale-sm" style="background-color: ${config.surface_color}; color: ${config.primary_action_color}; border-color: ${config.primary_action_color};">
+                    ${config.launch_text}
+                  </span>
+                </div>
+                
+                <!-- Main Tagline -->
+                <h2 id="tagline" class="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight animate-fade-in-up delay-200 heading-text text-scale-xl" style="color: ${config.text_color};">
+                  ${config.tagline}
+                </h2>
+                
+                <!-- Decorative Tea Cup Illustration -->
+                <div class="relative w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-8 animate-float">
+                  <svg viewBox="0 0 120 120" class="w-full h-full">
+                    <!-- Cup body -->
+                    <ellipse cx="60" cy="95" rx="35" ry="8" fill="${config.primary_action_color}" opacity="0.2"/>
+                    <path d="M25 50 Q25 90 60 95 Q95 90 95 50 Z" fill="${config.surface_color}" stroke="${config.primary_action_color}" stroke-width="2"/>
+                    <!-- Cup handle -->
+                    <path d="M95 55 Q115 55 115 70 Q115 85 95 85" fill="none" stroke="${config.primary_action_color}" stroke-width="2"/>
+                    <!-- Tea surface -->
+                    <ellipse cx="60" cy="50" rx="35" ry="10" fill="${config.secondary_action_color}" opacity="0.6"/>
+                    <!-- Steam -->
+                    <path d="M45 40 Q40 25 48 15" fill="none" stroke="${config.text_color}" stroke-width="1.5" opacity="0.4" class="animate-steam"/>
+                    <path d="M60 38 Q55 20 63 8" fill="none" stroke="${config.text_color}" stroke-width="1.5" opacity="0.4" class="animate-steam delay-300"/>
+                    <path d="M75 40 Q70 25 78 15" fill="none" stroke="${config.text_color}" stroke-width="1.5" opacity="0.4" class="animate-steam delay-500"/>
+                    <!-- Decorative pattern on cup -->
+                    <path d="M35 65 Q45 60 55 65 Q65 70 75 65 Q85 60 90 65" fill="none" stroke="${config.primary_action_color}" stroke-width="1" opacity="0.5"/>
+                    <path d="M35 75 Q45 70 55 75 Q65 80 75 75 Q85 70 90 75" fill="none" stroke="${config.primary_action_color}" stroke-width="1" opacity="0.5"/>
+                  </svg>
+                </div>
+                
+                <!-- Description -->
+                <p id="description" class="font-body text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in-up delay-300 body-text text-scale-lg" style="color: ${config.text_color}; opacity: 0.85;">
+                  ${config.description}
+                </p>
+                
+                <!-- Email Signup -->
+                <div class="max-w-md mx-auto animate-fade-in-up delay-400">
+                  <form id="email-form" class="relative">
+                    <div class="flex flex-col sm:flex-row gap-3">
+                      <label for="email-input" class="sr-only">Email address</label>
+                      <input 
+                        type="email" 
+                        id="email-input"
+                        placeholder="Enter your email address" 
+                        class="flex-1 px-5 py-4 rounded-lg surface-card border focus:outline-none focus:ring-2 transition-all duration-300 body-text text-scale-base"
+                        style="background-color: ${config.surface_color}; border-color: ${config.secondary_action_color}; color: ${config.text_color};"
+                        required
+                      >
+                      <button 
+                        type="submit" 
+                        id="submit-btn"
+                        class="primary-btn px-8 py-4 rounded-lg font-semibold tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg text-scale-base"
+                        style="background-color: ${config.primary_action_color}; color: ${config.background_color};"
+                      >
+                        Join the Journey
+                      </button>
+                    </div>
+                    
+                    <!-- Success Message -->
+                    <p id="success-message" class="mt-4 text-green-400 text-scale-sm" style="display: none;">
+                      ✨ Welcome to the royal chai family! We'll notify you when we launch.
+                    </p>
+                    
+                    <!-- Error Message -->
+                    <p id="error-message" class="mt-4 text-red-400 text-scale-sm" style="display: none;"></p>
+                    
+                    <!-- Subscriber Count -->
+                    <p id="subscriber-count" class="mt-4 secondary-el text-scale-sm" style="color: ${config.secondary_action_color}; display: none;"></p>
+                  </form>
+                  
+                  <p class="mt-4 secondary-el text-scale-sm" style="color: ${config.secondary_action_color};">
+                    Be the first to experience the royal tradition
+                  </p>
+                </div>
+                
+                <!-- Spice Icons -->
+                <div class="flex justify-center gap-8 mt-12 animate-fade-in-up delay-500">
+                  <div class="text-center group">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-2 rounded-full surface-card flex items-center justify-center border transition-all duration-300 group-hover:scale-110" style="background-color: ${config.surface_color}; border-color: ${config.secondary_action_color};">
+                      <span class="text-2xl">🫚</span>
+                    </div>
+                    <span class="text-xs secondary-el tracking-wider text-scale-sm" style="color: ${config.secondary_action_color};">Ginger</span>
+                  </div>
+                  <div class="text-center group">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-2 rounded-full surface-card flex items-center justify-center border transition-all duration-300 group-hover:scale-110" style="background-color: ${config.surface_color}; border-color: ${config.secondary_action_color};">
+                      <span class="text-2xl">🌿</span>
+                    </div>
+                    <span class="text-xs secondary-el tracking-wider text-scale-sm" style="color: ${config.secondary_action_color};">Cardamom</span>
+                  </div>
+                  <div class="text-center group">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-2 rounded-full surface-card flex items-center justify-center border transition-all duration-300 group-hover:scale-110" style="background-color: ${config.surface_color}; border-color: ${config.secondary_action_color};">
+                      <span class="text-2xl">✨</span>
+                    </div>
+                    <span class="text-xs secondary-el tracking-wider text-scale-sm" style="color: ${config.secondary_action_color};">Cinnamon</span>
+                  </div>
+                  <div class="text-center group">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-2 rounded-full surface-card flex items-center justify-center border transition-all duration-300 group-hover:scale-110" style="background-color: ${config.surface_color}; border-color: ${config.secondary_action_color};">
+                      <span class="text-2xl">🌰</span>
+                    </div>
+                    <span class="text-xs secondary-el tracking-wider text-scale-sm" style="color: ${config.secondary_action_color};">Cloves</span>
+                  </div>
+                </div>
+                
+              </div>
+            </main>
+            
+            <!-- Footer -->
+            <footer class="w-full py-6 px-4 sm:px-8 border-t" style="border-color: ${config.secondary_action_color}20;">
+              <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p class="secondary-el text-scale-sm" style="color: ${config.secondary_action_color};">
+                  © 2024 Chai Culture. All rights reserved.
+                </p>
+                <div class="flex items-center gap-2">
+                  <span class="secondary-el text-scale-sm" style="color: ${config.secondary_action_color};">Made with</span>
+                  <span class="text-red-500">❤️</span>
+                  <span class="secondary-el text-scale-sm" style="color: ${config.secondary_action_color};">in India</span>
+                </div>
+              </div>
+            </footer>
+            
+          </div>
+        </div>
+      `;
+      
+      // Attach event listener
+      document.getElementById('email-form').addEventListener('submit', handleEmailSubmit);
+    }
+
+    // Initialize
+    async function init() {
+      renderApp();
+      
+      // Initialize Element SDK
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities,
+          mapToEditPanelValues
+        });
+      }
+      
+      // Initialize Data SDK
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) {
+          console.error('Failed to initialize Data SDK');
+        }
+      }
+    }
+
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c4f66b62671c06b',t:'MTc2OTU5MTg5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
